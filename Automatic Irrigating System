@@ -1,0 +1,231 @@
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(12,11,5,4,3,2);
+
+// input pins conditions
+//  A0=0-->raining
+//  A1=0-->upper level of water tank is low
+//  A2=0-->lower level of water tank is low
+//  A3=0-->presence of light( day time)
+//  A4=0-->presence of moisture
+
+//inputs
+
+int ra= A0;            // input pin for rain
+int wu= A1;            //input pin for the water upper level in the tank 
+int wl=A2;             //input pin for the water lower level in the tank
+int ldr=A3;            //input pin for the sun
+int moist=A4;          //input pin for the moisture in the mud
+
+//outputs
+
+int rain=6;             //output pin for rain
+int irrg=7;             //output pin for irrigating
+int pump=8;             //output pin for pump which is used to fill the water in the tank
+int lowa=0;             //output pin for low water indicator in the LCD 
+int delay1=1000;        //delay 1 sec
+int delay2=1000;        //delay 1 sec
+int delay3=1000;        //delay 1 sec
+void setup() 
+{
+  pinMode(ra,INPUT);       //input for rain
+  pinMode(wu,INPUT);       //input for water upper level
+  pinMode(wl,INPUT);       //input for water lower levlel
+  pinMode(ldr,INPUT);      //input for sun
+  pinMode(moist,INPUT);    //input for moistuer
+  pinMode(rain,OUTPUT);    //output for rain
+  pinMode(irrg,OUTPUT);    //input for irrigating
+  pinMode(pump,OUTPUT);    //input for pump which is used to fill the water in the tank
+  pinMode(lowa,OUTPUT);    //input for display low water indicator in LCD
+  lcd.begin(16,2);
+  lcd.print(" DUNAI HARIYALI");
+  delay(1000);
+}
+void loop()
+{
+ int rai=digitalRead(ra);   //input read for rain
+ int wLo=digitalRead(wl);   //input read for water lower level
+ int light=digitalRead(ldr);//input read for light
+ int moi=digitalRead(moist);//input read for moisture
+ int wUp=digitalRead(wu);   //input read for water upper level
+ lcd.setCursor(0,0);        //set cursor In LCD
+ lcd.print(" DUNAI HARIYALI");//print what you want
+     lcd.noCursor();
+   if(rai==1&&wUp==0&&light==1&&wLo==1&&moi==1)
+    {
+      digitalWrite(irrg,1);
+      digitalWrite(pump,1);
+      digitalWrite(lowa,0);
+      digitalWrite(rain,0);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(0,1);
+      lcd.print("IRRIGATING/PUMPING");
+      delay(delay2);
+      lcd.clear();
+      digitalWrite(irrg,0);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(6,1);
+      lcd.print("IDLE");
+       lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(4,1);
+      lcd.print(" PUMPING");
+      delay(delay3);
+      lcd.clear();
+    }
+    if(rai==1&&light==1&&wLo==1&&moi==0)
+    {
+      digitalWrite(irrg,0);
+      digitalWrite(rain,0);
+      digitalWrite(lowa,0);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(6,1);
+      lcd.print("IDLE");
+      delay(1000);
+      lcd.clear(); 
+    }
+      if(rai==1&&wLo==1&&light==0&&(moi==1||moi==0))
+    {
+      digitalWrite(irrg,0);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(4,1);
+      lcd.print("DAY TIME");
+      delay(1000);
+       lcd.clear();
+     }
+      if(rai==1&&wUp==0&&wLo==0&&(light==1||light==0)&&(moi==1||moi==0))
+    {
+      digitalWrite(lowa,1);
+      digitalWrite(irrg,0);
+      digitalWrite(rain,0);
+      digitalWrite(pump,1);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(0,1);
+      lcd.print("PUMPING/LO-WATER");
+      delay(1000);
+      lcd.clear(); 
+    }
+     if(rai==0&&wUp==0&&wLo==1&&(light==1||light==0)&&(moi==0||moi==1))
+    {
+      digitalWrite(lowa,0);
+      digitalWrite(rain,1);
+      digitalWrite(pump,1);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(0,1);
+      lcd.print("RAINING/PUMPING");
+      delay(1000);
+      lcd.clear();
+     }
+      if(rai==1&&wUp==0&&wLo==1&&light==0&&moi==1)
+    {
+      digitalWrite(lowa,0);
+      digitalWrite(pump,1);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(4,1);
+      lcd.print(" PUMPING");
+      delay(1000);
+      lcd.clear();
+     }  
+     if(rai==1&&wUp==1&&wLo==1&&light==0&&moi==1)
+    {
+      digitalWrite(lowa,0);
+      digitalWrite(pump,0);
+     }
+     if(rai==1&&wUp==1&&wLo==1&&light==1&&moi==1)
+    {
+      digitalWrite(lowa,0);
+      digitalWrite(rain,0);
+      digitalWrite(pump,0);
+      digitalWrite(irrg,1);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(3,1);
+      lcd.print("IRRIGATING");
+      delay(delay2); 
+      lcd.clear();//same as above
+      digitalWrite(irrg,0);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(6,1);
+      lcd.print("IDLE");  
+      delay(delay3);
+      lcd.clear();
+     }
+     if(rai==1&&wUp==1&&wLo==1&&(light==1||light==0)&&moi==0)
+    {
+      digitalWrite(lowa,0);
+      digitalWrite(irrg,0);
+      digitalWrite(pump,0);
+      digitalWrite(rain,0);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(6,1);
+      lcd.print("IDLE");
+      delay(1000);
+      lcd.clear();
+     }
+     if(rai==0&&wUp==1&&wLo==1&&(light==1||light==0)&&(moi==0||moi==1))    
+    {
+      digitalWrite(irrg,0);
+      digitalWrite(pump,0);
+      digitalWrite(rain,1);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(4,1);
+      lcd.print(" RAINING");
+      delay(1000);
+      lcd.clear();
+     }
+     if(rai==0&&wUp==0&&wLo==1&&light==1&&(moi==1||moi==0))
+    {
+      digitalWrite(irrg,0);
+      digitalWrite(rain,1);
+      digitalWrite(pump,1);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(0,1);
+      lcd.print("RAINING/PUMPING");
+      delay(1000);
+      lcd.clear();
+     }
+   if(rai==0&&wUp==0&&wLo==0&&(light==1||light==0)&&(moi==1||moi==0))
+    {
+      digitalWrite(irrg,0);
+      digitalWrite(rain,1);
+      digitalWrite(lowa,1);
+      digitalWrite(pump,1);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(0,1);
+      lcd.print("RAIN/PMP/L-WATER");
+      delay(1000);
+      lcd.clear();
+     }
+      if(rai==1&&wUp==0&&wLo==1&&light==1&&moi==0)
+    {
+      digitalWrite(rain,0);
+      digitalWrite(lowa,0);
+      digitalWrite(pump,1);
+      lcd.setCursor(0,0);
+      lcd.print(" DUNAI HARIYALI ");
+      lcd.setCursor(4,1);
+      lcd.print(" PUMPING");
+      delay(1000);
+      lcd.clear();
+     }
+    
+       
+  }
+  
+     
+      
+    
+
+
+
